@@ -3,10 +3,12 @@ import { Container, TextField, Typography, Box, Card, CardContent, IconButton, I
 import SearchIcon from '@mui/icons-material/Search';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import { getAnswer, getcollectionsf, getHistory } from '../layouts/components/utils/api';
+import { getAnswer, getcollectionsf, getHistory, getonedoc, setSelDoc } from '../layouts/components/utils/api';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setactive } from '../redux/activeSlice';
 
 const ChatAI = () => {
 
@@ -15,36 +17,48 @@ const ChatAI = () => {
   const [selectedIds, setSelectedIds] = useState([0]);
   const [histories, setHistories] = useState([])
   const collections = getcollectionsf()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const contentData = { id: 0, name: 'Any Collection' }
-  
+
   const styles = {
     container: {
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+
     },
     history: {
       borderRadius: 4,
       width: 300,
       textAlign: 'center'
     },
-    card: { 
-      mb: 2, 
+    card: {
+      mb: 2,
       background: '#EFEFEF',
       border: 'hidden',
-      borderRadius: 4, 
+      borderRadius: 4,
       textAlign: 'left',
       cursor: 'pointer'
     },
-    cardwrap: { 
-      mb: 2, 
-      background: '#EFEFEF', 
-      border: 'hidden', 
-      borderRadius: 4 
+    cardwrap: {
+      mb: 2,
+      background: '#EFEFEF',
+      border: 'hidden',
+      borderRadius: 4
     },
     searchIcon: {
-      fontSize: 24, 
+      fontSize: 24,
       fontWeight: 'bold'
+    },
+    center: {
+      display: 'flex',
+      justifyContent: 'center',
+      left: 50
+    },
+    cursor: {
+      cursor: 'pointer'
     }
   }
 
@@ -69,26 +83,28 @@ const ChatAI = () => {
   }
 
   const handleHistory = (item) => {
-    console.log(item.query)
+    
     setQuery(item.query)
-    const collectionIds = item.collections.map(collection => collection.id);
-    setSelectedIds( collectionIds )
+    setSelectedIds(item.collections.length === 0 ? [0] : item.collections)
     fetchData()
-
   }
 
   const fetchData = async () => {
 
-    if(!query.trim()){
+    if (query.trim() === null) {
       toast('Please input query')
       return
     }
+   
+    dispatch(setactive(true))
     const response = await getAnswer(query, selectedIds)
     if (response.status === 200) {
       setAnswer(response.data);
-    }else{
+    } else {
       toast('Server error! ')
     }
+    dispatch(setactive(false))
+
   }
 
   const fetchHistoryData = async () => {
@@ -117,9 +133,22 @@ const ChatAI = () => {
       .join(', ');
   };
 
+  const handleRef = async (data) => {
+    console.log(data)
+   const response =  await getonedoc(data.collection_id, data.document_id)
+   if(response.status === 200)
+    {
+      setSelDoc(response.data)
+      navigate('/dbmanage')
+    }else{
+      toast('There is no exist document')
+    }
+  }
+
   return (
 
     <Container sx={{ mt: 4 }}>
+
       <Box mb={4} display="flex">
         <TextField
           variant="outlined"
@@ -128,7 +157,7 @@ const ChatAI = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={ styles.searchIcon } />
+                <SearchIcon sx={styles.searchIcon} />
               </InputAdornment>
             ),
             sx: {
@@ -148,8 +177,11 @@ const ChatAI = () => {
         />
       </Box>
 
+
       <Box sx={styles.container}>
-        <Box>
+
+        <Box mr={2}>
+
           <Box display="flex" mb={2}>
             <Select
               labelId="multiple-select-label"
@@ -169,23 +201,26 @@ const ChatAI = () => {
               ))}
             </Select>
           </Box>
-          
-          { answer && (<Card key={answer.id} variant="outlined" sx={ styles.cardwrap }>
-              <CardContent>
-                <Typography variant="h6" paragraph>{answer.user}</Typography>
-                <Typography variant="body2" color="textSecondary" paragraph>
-                  Answer: {answer.answer}
-                </Typography>
-                <Box display="flex" justifyContent="flex-end">
-                  <IconButton >
-                    <ThumbUpIcon width={10}  height={10}/>
-                  </IconButton>
-                  <IconButton>
-                    <ThumbDownIcon width={10} height={10} />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>)
+          {answer && (<Card key={answer.id} variant="outlined" sx={styles.cardwrap}>
+            <CardContent>
+              <Typography variant="h6" paragraph>{answer.user}</Typography>
+              <Typography variant="body2" color="textSecondary" paragraph>
+                Answer: {answer.answer}
+              </Typography>
+              <Box  sx={ styles.cursor } overflow={'hidden'} onClick={() => handleRef(answer.source_data)}>
+              <Typography variant="button" color="textSecondary" paragraph >
+                Ref: {answer.source_data && answer.source_data.length > 0 && answer.source_data[0].paragraph}
+              </Typography></Box>
+              <Box display="flex" justifyContent="flex-end">
+                <IconButton >
+                  <ThumbUpIcon width={10} height={10} />
+                </IconButton>
+                <IconButton>
+                  <ThumbDownIcon width={10} height={10} />
+                </IconButton>
+              </Box>
+            </CardContent>
+          </Card>)
           }
         </Box>
 
@@ -193,7 +228,7 @@ const ChatAI = () => {
           <Typography variant='h6' paragraph>History</Typography>
 
           {histories && histories.map((item, index) => (
-            <Card key={index} variant="outlined" sx={ styles.card } onClick={() => handleHistory(item)}>
+            <Card key={index} variant="outlined" sx={styles.card} onClick={() => handleHistory(item)}>
               <CardContent>
                 <Typography variant="body2" color="textSecondary">
                   Q: {item.query}
@@ -201,7 +236,6 @@ const ChatAI = () => {
                 <Typography variant="body1" paragraph>
                   {item.bot_response}
                 </Typography>
-                <Typography variant="body2" >{'collection'}</Typography>
               </CardContent>
             </Card>
           ))}

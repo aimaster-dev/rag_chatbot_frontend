@@ -6,6 +6,9 @@ import { useResponsive } from '../hooks/use-responsive';
 import Button from '@mui/material/Button';
 import { getSelDoc, updateDocument } from '../layouts/components/utils/api';
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from 'react-redux';
+import { setactive } from '../redux/activeSlice'
 
 const DBManage = () => {
 
@@ -13,6 +16,7 @@ const DBManage = () => {
   const [content, setContent] = useState('')
   const [active, setActive] = useState(false)
   const lgUp = useResponsive('up', 'lg');
+  const dispatch = useDispatch()
 
   const styles = {
     description: {
@@ -89,9 +93,10 @@ const DBManage = () => {
     try{
       const id = selItem.id;
       const collection_id = selItem.collection_id
-    
+      dispatch(setactive(true))
       await updateDocument({ id, collection_id, title, content })
       setActive(false)
+      dispatch(setactive(false))
     }catch(err) {
       toast('The blank document is already existed in this collection.')
     }

@@ -7,10 +7,13 @@ import { useResponsive } from '../hooks/use-responsive';
 import { updateCollection, getDocuments, deleteDocument, setSelDoc, getSelCollection } from '../layouts/components/utils/api';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
-import { createDocument } from '../layouts/components/utils/api';
+import { createDocument, setRefresh } from '../layouts/components/utils/api';
 import IconButton from '@mui/material/IconButton';
 import DeleteOutline from '@mui/icons-material/DeleteOutline';
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from 'react-redux';
+import { setactive } from '../redux/activeSlice';
 
 const Collection = () => {
 
@@ -22,6 +25,7 @@ const Collection = () => {
   const navigate = useNavigate();
   const [active, setActive] = useState(false)
   const prevSelectedItem = useRef();
+  const dispatch = useDispatch();
 
   const styles = {
     description: {
@@ -89,11 +93,12 @@ const Collection = () => {
   const handleDel = async (id) => {
    
     try{
-   
+      dispatch(setactive(true))
       await deleteDocument(selecteditem.id , id);
       initData();
+      dispatch(setactive(false))
       toast('Successfuly removed')
-   
+      navigate('/collection')
     }catch(err){
       toast('Interupt error')
     }
@@ -103,12 +108,14 @@ const Collection = () => {
   const initData = useCallback(async () => {
     if (selecteditem) {
       try {
+      
         setCollectionID(selecteditem.id);
         setTitle(selecteditem.name);
         setComment(selecteditem.description);
   
         const response = await getDocuments(selecteditem.id);
-  
+        
+
         if (response && response.status === 200) {
           setDocuments(response.data);
         } else {
@@ -123,10 +130,13 @@ const Collection = () => {
   }, [selecteditem]);
  
   const handleNewDoc = async () => {
-    try{
 
+    try{
+      
+      dispatch(setactive(true))
       const data = await createDocument(selecteditem.id);
       setSelDoc(JSON.stringify(data.data))
+      dispatch(setactive(false))
       navigate('/dbmanage')
       toast('Successfully added new document')
     
@@ -181,10 +191,10 @@ const Collection = () => {
     try{
       
       await updateCollection({ collectionID, title, comment });
-      navigate('/index')
       setActive(false)
+      setRefresh(true)
       toast('Successfully saved')
-
+      navigate('/collection')
     }catch (err) {
       toast("The blank document is already existed in this collection.")
     }

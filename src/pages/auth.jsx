@@ -18,6 +18,7 @@ import bgImage from "../assets/image/background.jpg"
 import { login, register, setHeader, setToken } from '../layouts/components/utils/api';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
 
@@ -69,7 +70,7 @@ function Login() {
       if(response.status === 200){
 
         setToken(response.data.access_token, response.data.refresh_token)
-        setHeader(response.data.access_token)
+        setHeader()
         navigate('/index')
         
       

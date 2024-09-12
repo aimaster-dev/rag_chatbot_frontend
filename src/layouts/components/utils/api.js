@@ -3,18 +3,22 @@ import axios from 'axios';
 const base_url = "http://localhost:8000";
 
 export function setToken(access_token, refresh_token) {
-  sessionStorage.setItem('access_token', access_token)
-  sessionStorage.setItem('refresh_token', refresh_token)
+  localStorage.setItem('access_token', access_token)
+  localStorage.setItem('refresh_token', refresh_token)
 }
 
 export function getAToken() {
-  const token = sessionStorage.getItem('access_token')
+  const token = localStorage.getItem('access_token')
   return token
 }
 
 export function getRToken() {
-  const token = sessionStorage.getItem('refresh_token')
+  const token = localStorage.getItem('refresh_token')
   return token
+}
+
+export function setRefresh(flag) {
+  localStorage.setItem('active', flag)
 }
 
 export function getSelCollection() {
@@ -47,7 +51,7 @@ export function setSelDoc(data) {
 
 export function emptyToken() {
 
-  sessionStorage.clear()
+  localStorage.clear()
 
 }
 
@@ -65,7 +69,7 @@ export async function login(data) {
   } catch (error) {
 
     console.log(error.response)
-    console.error('Login error:', error.response ? error.response.data : error.message);
+    console.log('Login error:', error.response ? error.response.data : error.message);
     return error.response;
   }
 }
@@ -79,7 +83,7 @@ export async function register(data) {
 
   } catch (error) {
 
-    console.error('Register error:', error.response ? error.response.data : error.message);
+    console.log('Register error:', error.response ? error.response.data : error.message);
     return error.response;
 
   }
@@ -94,7 +98,7 @@ export async function getAnswer(query, filter) {
 
   } catch (error) {
 
-    console.error('Get Answer error:', error.response ? error.response.data : error.message);
+    console.log('Get Answer error:', error.response ? error.response.data : error.message);
     if(error.response && error.response.status === 401)
       {
         await refresh()
@@ -107,6 +111,11 @@ export async function getAnswer(query, filter) {
 export async function getCollections() {
 
   try {
+
+    if(!axios.defaults.headers['Authorization'])
+    {
+      setHeader()
+    }
 
     const response = await axios.get(base_url + '/collections/getall');
     return response;
@@ -125,6 +134,24 @@ export async function getCollections() {
   }
 }
 
+export async function getonedoc(id, collection_id) {
+
+  try {
+
+    const response = await axios.get(base_url + '/collections/' + collection_id + '/documents/get' + id);
+    return response;
+
+  } catch (error) {
+    console.log('Get Answer error:', error.response ? error.response.data : error.message);
+    if(error.response && error.response.status === 401)
+      {
+        await refresh()
+        return getonedoc( id,collection_id )
+      }
+    return error.response;
+  }
+}
+
 export async function getDocuments(id) {
   
   if(!id) { 
@@ -137,7 +164,7 @@ export async function getDocuments(id) {
     return response;
 
   } catch (error) {
-    console.error('Get Answer error:', error.response ? error.response.data : error.message);
+    console.log('Get Answer error:', error.response ? error.response.data : error.message);
     if(error.response && error.response.status === 401)
       {
         await refresh()
@@ -155,7 +182,7 @@ export async function createCollection() {
     return response;
 
   } catch (error) {
-    console.error('Create collection error:', error.response ? error.response.data : error.message);
+    console.log('Create collection error:', error.response ? error.response.data : error.message);
     if(error.response && error.response.status === 401)
       {
         await refresh()
@@ -173,7 +200,7 @@ export async function createDocument( id ) {
     return response;
 
   } catch (error) {
-    console.error('Create collection error:', error.response ? error.response.data : error.message);
+    console.log('Create collection error:', error.response ? error.response.data : error.message);
     if( error.response && error.response.status === 401 )
       {
         await refresh()
@@ -191,7 +218,7 @@ export async function updateDocument({ id, collection_id ,title , content }) {
     return response;
 
   } catch (error) {
-    console.error('Create collection error:', error.response ? error.response.data : error.message);
+    console.log('Create collection error:', error.response ? error.response.data : error.message);
     if(error.response && error.response.status === 401)
       {
         await refresh()
@@ -210,7 +237,7 @@ export async function updateCollection({ collectionID, title , comment }) {
 
   } catch (error) {
 
-    console.error('Create collection error:', error.response ? error.response.data : error.message);
+    console.log('Create collection error:', error.response ? error.response.data : error.message);
     if(error.response && error.response.status === 401)
       {
         await refresh()
@@ -234,7 +261,7 @@ export async function deleteCollection( id ) {
 
   } catch (error) {
 
-    console.error('Create collection error:', error.response ? error.response.data : error.message);
+    console.log('Create collection error:', error.response ? error.response.data : error.message);
     if(error.response && error.response.status === 401)
       {
         await refresh()
@@ -259,7 +286,7 @@ export async function deleteDocument( collection_id, doc_id ) {
 
   } catch (error) {
 
-    console.error('Create collection error:', error.response ? error.response.data : error.message);
+    console.log('Create collection error:', error.response ? error.response.data : error.message);
     if(error.response && error.response.status === 401)
       {
         await refresh()
@@ -280,7 +307,7 @@ export async function getHistory() {
 
   } catch (error) {
 
-    console.error('Create collection error:', error.response ? error.response.data : error.message);
+    console.log('Create collection error:', error.response ? error.response.data : error.message);
     if(error.response && error.response.status === 401)
       {
          await refresh()

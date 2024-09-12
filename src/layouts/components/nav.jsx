@@ -9,13 +9,16 @@ import { NAV } from './utils/config-layout';
 import { usePathname } from '../../hooks/use-pathname';
 import BasicSimpleTreeView from './utils/treeview';
 import logo from '../../assets/image/chatting.png'
-import { getCollections, setcollections } from './utils/api';
+import { getCollections, setcollections, setRefresh } from './utils/api';
+import { useDispatch } from 'react-redux';
+import { setactive } from '../../redux/activeSlice';
 
 export default function Nav( { openNav, onCloseNav } ) {
 
     const upLg = useResponsive('up', 'lg');
     const [collection, setCollection] = useState([]);
     const pathname = usePathname();
+    const dispatch = useDispatch();
 
     const styles = {
         container: {
@@ -67,24 +70,26 @@ export default function Nav( { openNav, onCloseNav } ) {
     }
    
     const fetchData = async () => {
-        
+        dispatch(setactive(true))
        const response = await getCollections()
        if(response && response.status === 200){
     
         setCollection(response.data)
         setcollections(JSON.stringify(response.data))
+        setRefresh(false)
        }
+       dispatch(setactive(false))
     }
-
+    const active = localStorage.getItem('active')
     useEffect(() => {
 
         if (openNav) {
             onCloseNav();
         }
         
+        
         fetchData()
-
-    }, [pathname, openNav]);
+    }, [active, pathname]);
 
     return (
         <Box

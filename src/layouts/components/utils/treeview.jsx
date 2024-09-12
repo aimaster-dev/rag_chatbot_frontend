@@ -9,14 +9,17 @@ import { useNavigate } from 'react-router-dom';
 import DeleteOutline from '@mui/icons-material/DeleteOutline';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
-import { createCollection, deleteCollection, getDocuments, setSelCollection, setSelDoc } from './api';
+import { createCollection, deleteCollection, getDocuments, setSelCollection } from './api';
 import { useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { setactive } from '../../../redux/activeSlice';
 
 export default function BasicSimpleTreeView({ data = [], refresh }) {
 
   const navigate = useNavigate();
   const [trees, setTrees] = React.useState(data);
+  const dispatch = useDispatch();
 
   const styles = {
     divide: {
@@ -40,6 +43,9 @@ export default function BasicSimpleTreeView({ data = [], refresh }) {
       alignItems: 'center',
       width: '100%',
     },
+    center: {
+      position:'absolute'
+    }
   };
 
 
@@ -62,7 +68,7 @@ export default function BasicSimpleTreeView({ data = [], refresh }) {
           endIcon: StarRateIcon,
         }}
       >
-        {trees.map((item, index) => (
+        {trees && trees.map((item, index) => (
           <TreeItem
             key={item.id}
             itemId={String(index)}  // Convert index to string
@@ -79,14 +85,6 @@ export default function BasicSimpleTreeView({ data = [], refresh }) {
             sx={styles.treeBackground}
             onClick={() => handleCollection(item)}
           >
-            {item.children && item.children.map((child) => (
-              <TreeItem
-                key={child.id}
-                itemId={String(child.id)}
-                sx={styles.treeBackground}
-                onClick={() => handleItem(child)}
-              />
-            ))}
           </TreeItem>
         ))}
       </SimpleTreeView>
@@ -95,7 +93,7 @@ export default function BasicSimpleTreeView({ data = [], refresh }) {
   }
 
   const handleCollection = async (item) => {
-
+    
     setSelCollection(JSON.stringify(item));
     const response = await getDocuments(item.id)
 
@@ -110,14 +108,17 @@ export default function BasicSimpleTreeView({ data = [], refresh }) {
       return tree;
     });
     setTrees(updatedTrees)
+    
   };
 
   const handleDel = async (id) => {
     
     try{
 
+      dispatch(setactive(true))
       await deleteCollection(id);
-      refresh();
+      navigate('/collection')
+      dispatch(setactive(false))
       toast('Successfully deleted')
 
     }catch(err){
@@ -128,22 +129,21 @@ export default function BasicSimpleTreeView({ data = [], refresh }) {
     
   };
 
-  const handleItem = (child) => {
-    setSelDoc(JSON.stringify(child));
-    navigate('/dbmanage');
-  };
-
-
   const handleChatAI = () => {
     navigate('/index');
   };
 
 
   const handlenew = async () => {
+
     try{
+
+      dispatch(setactive(true))
       await createCollection();
       refresh();
+      dispatch(setactive(false))
       toast("Successfully added! ")
+
     }catch (err){
       toast("Interupt errors.")
     }
@@ -168,7 +168,7 @@ export default function BasicSimpleTreeView({ data = [], refresh }) {
       </div>
 
       {renderTree()}
-
+      
       <SimpleTreeView
         slots={{
           expandIcon: AddIcon,
@@ -178,6 +178,7 @@ export default function BasicSimpleTreeView({ data = [], refresh }) {
         sx={styles.title}
       >
         <TreeItem itemId="grid-new" label="New Collection" sx={styles.treeBackground} onClick={handlenew} />
+      
       </SimpleTreeView>
       <div>
           <ToastContainer />
