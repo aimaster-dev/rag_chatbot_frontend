@@ -1,0 +1,233 @@
+
+@font-face {
+  font-family: 'DIN-Medium';
+  src: url('./webfonts/DIN Medium.otf') format('truetype');
+  }
+
+.background-radial-gradient {
+    /**background-image: url("../../../public/assets/img/group@3x.png");**/
+    background:no-repeat;
+    display: flex;
+}
+
+#radius-shape-1 {
+  height: 220px;
+  width: 220px;
+  top: -60px;
+  left: -130px;
+  background: radial-gradient(#44006b, #ad1fff);
+  overflow: hidden;
+}
+
+#radius-shape-2 {
+  border-radius: 38% 62% 63% 37% / 70% 33% 67% 30%;
+  bottom: -60px;
+  right: -110px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(#44006b, #ad1fff);
+  overflow: hidden;
+}
+
+.bg-glass {
+  background-color: hsla(0, 0%, 100%, 0.9) !important;
+  backdrop-filter: saturate(200%) blur(25px);
+}
+
+.text-center .pb-lg-2
+{
+  display: flex;
+  justify-content: space-between;  
+}
+
+.p-5 > p 
+{
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.p-4
+{
+  padding: 0px !important;
+}
+
+.p-5 > input
+{
+  font-size: 14px;
+  font-family: "PingFang SC-Bold";
+  font-weight: 700;
+}
+
+.btn-signin
+{
+  background-color: #B9EC51;
+  color: #333333 ;
+}
+
+.btn-signin :hover
+{
+  background-color: #B9EC51;
+  color: #333333 ;
+}
+
+.btn-signin :pressed
+{
+  background-color: var(--mdb-btn-active-bg);
+  color: #333333 ;
+}
+
+.btn-signin:active:hover {
+  background-color: #B9EC51;
+}
+
+.p-5 {
+  padding-top: 3rem!important;
+  padding-bottom: 0rem !important;
+  padding-right: 3rem !important;
+  padding-left: 3rem !important;
+}
+
+.text-center > span
+{
+  color:red;
+  font-family: 'DIN-Medium';
+}
+
+.h-title
+{
+  color: '#ffffff';
+  line-height: 65px;
+  margin-top: 73px;
+  font-size: 80px;
+}
+
+.body-title
+{
+  color: rgb(255, 255, 255); 
+  font-weight: 10;
+  font-size: 14px;
+}
+
+.text-center
+{
+   position: relative;
+   padding-left: 10%;
+   margin-top: 96px;
+}
+
+.login-position
+{
+  position: absolute !important;
+  padding-right: 18%!important;
+  width: 100%!important;
+  display: flex!important;
+  justify-content: right!important;
+  margin-top: 48px!important;
+}
+
+.register-position
+{
+  position: absolute !important;
+  padding-right: 18%!important;
+  width: 100%!important;
+  display: flex!important;
+  justify-content: right!important;
+  margin-top: -60px!important;
+}
+
+.rounded-start
+{
+  position: absolute;
+}
+
+.row
+{
+  padding-top: 6.6%;
+}
+
+.form-outline .form-control~.form-label
+{
+  display: none;
+}
+
+.sign-title
+{
+  position: relative;
+  font-size: 40px;
+  font-family: 'PingFang SC-Bold';
+  padding-left: 45px;
+  padding-top: 41px;  
+}
+
+.register-title
+{
+  position: relative;
+  font-size: 40px;
+  font-family: 'PingFang SC-Bold';
+  padding-left: 24px;
+  padding-top: 41px;  
+}
+
+
+
+.card-title > .p-5
+{
+  padding-left: 3rem !important;
+  padding-top: 0;
+  padding-right: 3rem !important;
+  padding-bottom: 0;
+}
+
+.text-ask
+{
+  display: flex;
+    justify-content: space-between;
+}
+
+#form3, #form4
+{
+  width: 400px;
+}
+
+.header-logo{
+  position: absolute;
+  margin-left: 3.28%;
+  margin-top: 2.56%;
+  display: flex;
+  z-index: 1;
+}
+
+.header-logo p
+{
+  margin-left: 27px;
+  font-size: 48px;
+  font-family: 'Ramabhadra-Regular';
+  font-weight: normal;
+  color: white;
+}
+
+.flex-bold-14
+{
+  font-weight: 700;
+  font-size: 16px;
+  font-family: 'PingFang SC-Bold';
+  display: flex;
+  margin-bottom: 0px;
+}
+
+.red-star
+{
+  font-size: 16px;
+  color:red;
+}
+
+.flex-row
+{
+  display: flex;
+  justify-content: space-between;
+}
+
+.d-flex
+{
+  margin-top: 18px;
+}
