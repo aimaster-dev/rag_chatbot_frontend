@@ -67,25 +67,25 @@ function Login() {
     if(!regFlag)
     {
       const response = await login({username:name, password})
-      if(response.status === 200){
+      if(response && response.status && response.status === 200){
 
         setToken(response.data.access_token, response.data.refresh_token)
         setHeader()
         navigate('/index')
         
       
-      } else if (response.status === 401) {
+      } else if ( response && response.status && response.status === 401) {
         toast('Invalid token, please relogin')
         console.log('Error 401')
       
-      } else if (response.status === 403) {
+      } else if (response && response.status && response.status === 403) {
         toast('Invalid token, please relogin')
         console.log('Error 403')
       }
 
     }else{
       const response = await register({username:name, email, password})
-      if(response.status === 200){
+      if(response && response.status && response.status === 200){
         
         setRegFlag(false)
         toast('Successfully registred')
