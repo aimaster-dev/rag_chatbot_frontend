@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const base_url = "http://localhost:8000";
+const base_url = process.env.REACT_APP_BACKEND_URL;
 
 export function setToken(access_token, refresh_token) {
   localStorage.setItem('access_token', access_token)
@@ -63,12 +63,11 @@ export async function setHeader() {
 export async function login(data) {
 
   try {
+    console.log(process.env.REACT_APP_BACKEND_URL)
     const response = await axios.post(base_url + '/auth/login', data);
     return response;
 
   } catch (error) {
-
-    console.log(error.response)
     console.log('Login error:', error.response ? error.response.data : error.message);
     return error.response;
   }
@@ -134,11 +133,11 @@ export async function getCollections() {
   }
 }
 
-export async function getonedoc(id, collection_id) {
+export async function getonedoc(collection_id, document_id) {
 
   try {
 
-    const response = await axios.get(base_url + '/collections/' + collection_id + '/documents/get' + id);
+    const response = await axios.get(base_url + '/collections/' + collection_id + '/documents/get/' + document_id);
     return response;
 
   } catch (error) {
@@ -146,7 +145,7 @@ export async function getonedoc(id, collection_id) {
     if(error.response && error.response.status === 401)
       {
         await refresh()
-        return getonedoc( id,collection_id )
+        return getonedoc( collection_id, document_id )
       }
     return error.response;
   }

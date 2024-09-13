@@ -106,7 +106,7 @@ const ChatAI = () => {
     dispatch(setactive(false))
 
   }
-
+console.log(answer.source_data)
   const fetchHistoryData = async () => {
 
     const his_response = await getHistory()
@@ -124,6 +124,9 @@ const ChatAI = () => {
   };
 
   const renderSelectedNames = (selected) => {
+    if(!collections) {
+      return "Any Collection"
+    }
 
     return selected
       .map((id) => {
@@ -134,15 +137,20 @@ const ChatAI = () => {
   };
 
   const handleRef = async (data) => {
-    
-   const response =  await getonedoc(data.collection_id, data.document_id)
-   if( response && response.status && response.status === 200 )
-    {
-      setSelDoc(response.data)
-      navigate('/dbmanage')
-    }else{
-      toast('There is no exist document')
+  
+    if(!data || data.length === 0){
+      toast("There is no refference")
+      return;
     }
+
+    const response =  await getonedoc(data[0].collection_id, data[0].document_id)
+    if( response && response.status && response.status === 200 )
+      {
+        setSelDoc(JSON.stringify(response.data))
+        navigate('/dbmanage')
+      }else{
+        toast('There is no exist document')
+      }
   }
 
   return (
@@ -193,7 +201,7 @@ const ChatAI = () => {
                 <Checkbox checked={selectedIds.indexOf(contentData.id) > -1} />
                 <ListItemText primary={contentData.name} />
               </MenuItem>
-              {collections.map((entry) => (
+              {collections && collections.map((entry) => (
                 <MenuItem key={entry.id} value={entry.id}>
                   <Checkbox checked={selectedIds.indexOf(entry.id) > -1} />
                   <ListItemText primary={entry.name} />
