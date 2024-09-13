@@ -98,7 +98,7 @@ const ChatAI = () => {
    
     dispatch(setactive(true))
     const response = await getAnswer(query, selectedIds)
-    if (response.status === 200) {
+    if ( response && response.status && response.status === 200 ) {
       setAnswer(response.data);
     } else {
       toast('Server error! ')
@@ -110,7 +110,7 @@ const ChatAI = () => {
   const fetchHistoryData = async () => {
 
     const his_response = await getHistory()
-    if (his_response.status === 200) {
+    if ( his_response && his_response.status && his_response.status === 200) {
       setHistories(his_response.data)
     }
   }
@@ -134,9 +134,9 @@ const ChatAI = () => {
   };
 
   const handleRef = async (data) => {
-    console.log(data)
+    
    const response =  await getonedoc(data.collection_id, data.document_id)
-   if(response.status === 200)
+   if( response && response.status && response.status === 200 )
     {
       setSelDoc(response.data)
       navigate('/dbmanage')
